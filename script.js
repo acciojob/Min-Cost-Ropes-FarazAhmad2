@@ -3,7 +3,7 @@ function mincost(arr)
 //write your code here
 // return the min cost
 	const heapify = (array) => {
-        for (let i = Math.floor(array.length / 2); i >= 0; i--) {
+        for (let i = Math.floor((array.length -1)/2 ); i >= 0; i--) {
             heapifyDown(array, i);
         }
     };
