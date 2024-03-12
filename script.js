@@ -1,55 +1,86 @@
+class MinHeap {
+    constructor() {
+        this.heap = [];
+    }
+
+    insert(value) {
+        this.heap.push(value);
+        this.heapifyUp();
+    }
+
+    heapifyUp() {
+        let currentIndex = this.heap.length - 1;
+        while (currentIndex > 0) {
+            const parentIndex = Math.floor((currentIndex - 1) / 2);
+            if (this.heap[currentIndex] >= this.heap[parentIndex]) break;
+            [this.heap[currentIndex], this.heap[parentIndex]] = [this.heap[parentIndex], this.heap[currentIndex]];
+            currentIndex = parentIndex;
+        }
+    }
+
+    remove() {
+        if (this.heap.length === 0) return null;
+        if (this.heap.length === 1) return this.heap.pop();
+
+        const min = this.heap[0];
+        this.heap[0] = this.heap.pop();
+        this.heapifyDown();
+        return min;
+    }
+
+    heapifyDown() {
+        let currentIndex = 0;
+        let nextIndex = null;
+
+        while (true) {
+            const leftChildIndex = currentIndex * 2 + 1;
+            const rightChildIndex = currentIndex * 2 + 2;
+            nextIndex = null;
+
+            if (leftChildIndex < this.heap.length) {
+                if (this.heap[leftChildIndex] < this.heap[currentIndex]) {
+                    nextIndex = leftChildIndex;
+                }
+            }
+
+            if (rightChildIndex < this.heap.length) {
+                if (this.heap[rightChildIndex] < this.heap[currentIndex] && this.heap[rightChildIndex] < this.heap[leftChildIndex]) {
+                    nextIndex = rightChildIndex;
+                }
+            }
+
+            if (nextIndex === null) break;
+            [this.heap[currentIndex], this.heap[nextIndex]] = [this.heap[nextIndex], this.heap[currentIndex]];
+            currentIndex = nextIndex;
+        }
+    }
+}
+
+
 function mincost(arr)
 { 
 //write your code here
 // return the min cost
-	const heapify = (array) => {
-        for (let i = Math.floor((array.length -1)/2 ); i >= 0; i--) {
-            heapifyDown(array, i);
-        }
-    };
+	const minHeap = new MinHeap();
 
-    const heapifyDown = (array, i) => {
-        const left = 2 * i + 1;
-        const right = 2 * i + 2;
-        let smallest = i;
-
-        if (left < array.length && array[left] < array[smallest]) {
-            smallest = left;
-        }
-
-        if (right < array.length && array[right] < array[smallest]) {
-            smallest = right;
-        }
-
-        if (smallest !== i) {
-            [array[i], array[smallest]] = [array[smallest], array[i]];
-            heapifyDown(array, smallest);
-        }
-    };
-
-    heapify(arr);
+    // Insert all ropes into the min heap
+    for (let rope of arr) {
+        minHeap.insert(rope);
+    }
 
     let totalCost = 0;
 
-    while (arr.length > 1) {
-        // Extract the two shortest ropes
-        const shortest1 = arr.shift();
-        const shortest2 = arr.shift();
-
-        // Calculate the cost of merging them
+    // Merge ropes until there's only one left
+    while (minHeap.heap.length > 1) {
+        const shortest1 = minHeap.remove();
+        const shortest2 = minHeap.remove();
         const cost = shortest1 + shortest2;
-
-        // Add the cost to the total
         totalCost += cost;
-
-        // Insert the merged rope back into the heap
-        arr.push(cost);
-        heapify(arr);
+        minHeap.insert(cost);
     }
 
     return totalCost;
-
-  
+	
 }
 
 module.exports=mincost;
